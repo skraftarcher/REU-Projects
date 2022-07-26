@@ -12,6 +12,8 @@ theme_set(theme_bw()+theme(panel.grid=element_blank()))
 sites<-read.csv("wdata/sites_withsummarydata.csv")
 quads<-read.csv("wdata/full_quadratlevel_dataset.csv")%>%
   mutate(oys.perm2=Live.Count/(0.25*0.25))
+tide<-read.csv("odata/noaa.csv")
+
 
 # look and see if sites differ on oyster abundance and oyster material (live and dead material)
 # first visualize it
