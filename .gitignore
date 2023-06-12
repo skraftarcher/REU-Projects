@@ -37,3 +37,18 @@ vignettes/*.pdf
 
 # R Environment Variables
 .Renviron
+
+# folders
+/odata/
+/wdata/
+
+#data 
+*.csv
+*.xlsx
+*.rds
+
+#figures
+*.jpg
+*.png
+*.tiff
+*.jpeg
