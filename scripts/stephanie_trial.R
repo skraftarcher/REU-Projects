@@ -42,3 +42,9 @@ sglist<-list(x=data.frame(a=1,b=2),y="this is part of the list",z=c(1,2,3))
 sglist$x$a
 sglist[[1]]
 
+sgvector<-c(1,1,1,2,3,4,5,1,2,233)
+
+sglm<-lm(Tt~Hw,data=sg19)
+summary(sglm)
+sglm$coefficients
+
