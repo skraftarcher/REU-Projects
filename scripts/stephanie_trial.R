@@ -37,7 +37,17 @@ ggplot(data=sg19)+
   theme(legend.position = "top")
 
 # creating a list and working with them.----
-sglist<-list(x=data.frame(a=1,b=2),y="this is part of the list",z=c(1,2,3))
+x=data.frame(a=c(1,2,3),b=c(2,3,4))
+x[2,1]
+x$a[3]
+
+x2<-x%>%
+  mutate(c=a+b,
+         d=mean(a),
+         e=sd(a))
+
+
+sglist<-list(x,y="this is part of the list",z=c(1,2,3))
 
 sglist$x$a
 sglist[[1]]
@@ -47,4 +57,30 @@ sgvector<-c(1,1,1,2,3,4,5,1,2,233)
 sglm<-lm(Tt~Hw,data=sg19)
 summary(sglm)
 sglm$coefficients
+
+
+
+# playing with real data
+sg192<-sg19%>%
+  select(Site,Quadrat,Date,Cnpy1Tt,Dnsty1Tt)%>%
+  group_by(Site)%>%
+  summarize(cnpy.m=mean(Cnpy1Tt,na.rm = TRUE),
+            cnpy.sd=sd(Cnpy1Tt,na.rm = TRUE))
+
+sg192
+  
+
+# make a figure
+ggplot()+
+  geom_jitter(data=sg19,aes(x=Site,y=Cnpy1Tt,color=Site),
+              size=2,alpha=.3,width=.1)+
+  geom_point(data=sg192,aes(x=Site,y=cnpy.m),size=4)+
+  geom_errorbar(data=sg192,aes(x=Site,ymin=cnpy.m-cnpy.sd,ymax=cnpy.m+cnpy.sd),width=.2)+
+  theme_bw()+
+  theme(panel.grid = element_blank(),
+        axis.title.y = element_text(family="mono",face = "bold",size=24),
+        legend.position = "bottom",
+        legend.background = element_rect(color="black"),
+        plot.title = element_text(hjust=0.5,size=24))+
+  ggtitle("Plot title")
 
