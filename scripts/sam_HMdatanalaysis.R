@@ -207,30 +207,35 @@ ggplot(data=HM)+geom_point(aes(x=pH,y=do))
 #HM between sites
 #totalHM concentrations are not significant between sites
 #individual HM are not significant between sites
+
+# set site as a factor with sister lake as the reference level
+HM$site<-factor(HM$site,levels = c("s","h","L","b"))
 ggplot()+
   geom_point(data=HM,aes(x=site,y=totalHM,color=site))
-sam4<-lm(totalHM~site+temp,data=HM)
+sam4<-lm(totalHM~site,data=HM)
+
 par(mfrow=c(2,2))
 plot(sam4)#investigate residuals 
 summary(sam4)
 
 ggplot()+
   geom_point(data=HM,aes(x=site,y=V,color=site))
-sam5<-lm(V~site+temp,data=HM)
-par(mfrow=c(2,2))
-plot(sam5)#investigate residuals 
+sam5<-lm(log(V)~site,data=HM)
+plot(sam5)#investigate residuals # structure to untransformed
+#residuals, tried log transforming looks OK
 summary(sam5)
+# trying kruskal wallace to make sure
+(sam.v.kw<-kruskal.test(V~site,data=HM))
 
 ggplot()+
   geom_point(data=HM,aes(x=site,y=Cr,color=site))
-sam6<-lm(Cr~site+temp,data=HM)
-par(mfrow=c(2,2))
-plot(sam6)#investigate residuals 
+sam6<-lm(log(Cr+.001)~site,data=HM)# added .001 because log of 0 is undefined
+plot(sam6)#investigate residuals # structure to residuals tried log transforming
 summary(sam6)
 
 ggplot()+
   geom_point(data=HM,aes(x=site,y=Fe,color=site))
-sam7<-lm(Fe~site+temp,data=HM)
+sam7<-lm(Fe~site,data=HM)
 par(mfrow=c(2,2))
 plot(sam7)#investigate residuals 
 summary(sam7)
@@ -245,29 +250,29 @@ summary(sam8)
 ggplot()+
   geom_point(data=HM,aes(x=site,y=Ba,color=site))
 sam9<-lm(Ba~site+temp,data=HM)
-par(mfrow=c(2,2))
+
 plot(sam9)#investigate residuals 
 summary(sam9)
 
 ggplot()+
   geom_point(data=HM,aes(x=site,y=Pb,color=site))
-sam10<-lm(Pb~site+temp,data=HM)
-par(mfrow=c(2,2))
+sam10<-lm(Pb~site,data=HM)
+
 plot(sam10)#investigate residuals 
 summary(sam10)
 #bayou has outlier - looks like a small pattern, but it is not signficant 
 
 ggplot()+
   geom_point(data=HM,aes(x=site,y=Cu,color=site))
-sam11<-lm(Cu~site+temp,data=HM)
-par(mfrow=c(2,2))
+sam11<-lm(Cu~site,data=HM)
+
 plot(sam11)#investigate residuals 
 summary(sam11)
 
 ggplot()+
   geom_point(data=HM,aes(x=site,y=Zn,color=site))
-sam12<-lm(Zn~site+temp,data=HM)
-par(mfrow=c(2,2))
+sam12<-lm(Zn~site,data=HM)
+
 plot(sam12)#investigate residuals 
 summary(sam12)
 
@@ -282,6 +287,7 @@ ggplot()+
   geom_point(data=HM.av,aes(x=debris1,y=totalHM.mean,color=site))
 ggplot()+
   geom_boxplot(data=HM,aes(y=totalHM,fill=debris,x=site))
+
 #no clear pattern between totalHM and debris between sites - not significant 
 sam1<-lm(totalHM~debris+temp+do+pH,data=HM)
 par(mfrow=c(2,2))
@@ -411,8 +417,8 @@ ggplot()+
   geom_boxplot(data=HM,aes(y=V,fill=oilgas,x=site))
 #LUMCON has the highest oil/gas and the highest V median - makes sense as oilgas is a source of V
 
-samVo<-lm(V~oilgas+temp,data=HM)#samVo = vanadiuma and oilgas
-par(mfrow=c(2,2))
+samVo<-lm(log(V)~oilgas,data=HM)#samVo = vanadiuma and oilgas
+
 plot(samVo)#investigate residuals 
 summary(samVo)
 #not significant - V vs oilgas between sites
@@ -572,8 +578,8 @@ ggplot()+
   geom_boxplot(data=HM,aes(y=Ba,fill=debris,x=site))
 #sites with more debris have slightly more ba
 
-samBa.d<-lm(Ba~debris+temp,data=HM)
-par(mfrow=c(2,2))
+samBa.d<-lm(log(Ba)~debris,data=HM)
+
 plot(samBa.d)#investigate residuals 
 summary(samBa.d)
 #no significant relationship between Ba and debris 
@@ -604,8 +610,8 @@ ggplot()+
   geom_boxplot(data=HM,aes(y=Ba,fill=oilgas,x=site))
 #small relationship between more oilgas and more Ba
 
-samBa.o<-lm(Ba~oilgas+temp,data=HM)
-par(mfrow=c(2,2))
+samBa.o<-lm(log(Ba)~oilgas,data=HM)
+
 plot(samBa.o)#investigate residuals 
 summary(samBa.o)
 #not significant - Ba vs oilgas 
@@ -620,8 +626,7 @@ ggplot()+
   geom_boxplot(data=HM,aes(y=Pb,fill=debris,x=site))
 #sites with more debris have slightly more Pb - small linear relationship
 
-samPb.d<-lm(Pb~debris+temp,data=HM)
-par(mfrow=c(2,2))
+samPb.d<-lm(log(Pb)~debris,data=HM)
 plot(samPb.d)#investigate residuals 
 summary(samPb.d)
 #?significant relationship between Pb and debris but residuals vs. fitted does not look
@@ -653,8 +658,7 @@ ggplot()+
   geom_boxplot(data=HM,aes(y=Pb,fill=oilgas,x=site))
 #no relationship between Pb and oilgas 
 
-samPb.o<-lm(Pb~oilgas+temp,data=HM)
-par(mfrow=c(2,2))
+samPb.o<-lm(log(Pb)~oilgas,data=HM)
 plot(samPb.o)#investigate residuals 
 summary(samPb.o)
 #?significant Pb and oilgas but not sure if residuals are normal
