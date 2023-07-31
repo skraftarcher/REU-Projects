@@ -5,6 +5,7 @@ library("tidyverse")
 
 #first steps are to visualize data thorugh scatter and box plots and then to check out residuals
 
+HM<-read.csv("odata/sam_HM1_26_July_2023.csv")
 
 HM1<-HM%>%
   select(site,sample,V,Cr,As,Ba,Pb,Cu,Zn,Fe,totalHM,debris,oilgas,shipping,temp,do,pH)%>%
