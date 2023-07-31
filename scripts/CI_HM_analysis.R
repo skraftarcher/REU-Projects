@@ -154,6 +154,7 @@ plot(hm.ci1)
 summary(hm.ci1)
 
 plot(hm.ci1.int)
+anova(hm.ci1.int)
 summary(hm.ci1.int)
 
 hm.ci2<-lm(oc2~totalHM,data=ci.hm)
