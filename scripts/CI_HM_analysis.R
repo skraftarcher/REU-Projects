@@ -1,14 +1,11 @@
 #Samantha Schlegel 7-29-23
 #CI and HM data 
 
-summary(ci2)
-summary(HM)
-
 library("tidyverse")
 library("gsheet")
 
 ci2<-read.csv("wdata/ci.final.data_29_July_2023.csv")
-
+HM<-read.csv("odata/sam_HM1_26_July_2023.csv")
 
 # creating same column name 
 ci3<-ci2%>%
@@ -66,11 +63,34 @@ ggplot()+
   geom_point(data=ci.hm.1,aes(x=site,y=oc1.mean,color=site))
 ggplot()+
   geom_boxplot(data=ci.hm,aes(y=oc1,x=site))
-#lm - significant 
-oc1.site<-lm(oc1~site+temp,data=ci.hm)
+
 par(mfrow=c(2,2))
+#make site a factor 
+
+ci.hm$site<-factor(ci.hm$site,levels = c("s","h","L","b"))
+
+#lm - significant 
+oc1.site<-lm(oc1~site,data=ci.hm)
+oc1.site.aov<-aov(oc1~site,data=ci.hm)
+# running with houma nav as reference level
+
+oc1.site.h<-lm(oc1~site,data=ci.hm%>%
+                 mutate(site=relevel(site,ref="h")))
+
+oc1.site.l<-lm(oc1~site,data=ci.hm%>%
+                 mutate(site=relevel(site,ref="L")))
+
+
+oc1.temp<-lm(oc1~temp,data=ci.hm)
 plot(oc1.site)
 summary(oc1.site)
+summary(oc1.site.h)
+summary(oc1.site.l)
+summary(oc1.site.aov)
+TukeyHSD(oc1.site.aov)
+
+plot(oc1.temp)
+summary(oc1.temp)
 
 #ANOVA - significant but violates homogeneity of variance 
 oc1.site.aov<-aov(oc1~site,data=ci.hm)
@@ -126,14 +146,17 @@ ggplot()+
   geom_boxplot(data=ci.hm,aes(y=oc2,x=totalHM,fill=site))
 
 #all sites except bayou shows as heavy metal increases, condition index decreases
+library(lmerTest)
+hm.ci1<-lmer(oc1~totalHM+(1|site),data=ci.hm)
+hm.ci1.int<-lm(oc1~totalHM*site,data=ci.hm)
 
-hm.ci1<-lm(oc1~totalHM+temp,data=ci.hm)
-par(mfrow=c(2,2))
 plot(hm.ci1)
 summary(hm.ci1)
 
-hm.ci2<-lm(oc2~totalHM+temp,data=ci.hm)
-par(mfrow=c(2,2))
+plot(hm.ci1.int)
+summary(hm.ci1.int)
+
+hm.ci2<-lm(oc2~totalHM,data=ci.hm)
 plot(hm.ci2)
 summary(hm.ci2)
 #neither significant but does not show normality 
