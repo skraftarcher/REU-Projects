@@ -1,8 +1,8 @@
 #Samantha Schlegel 7-29-23
 #CI and HM data 
+#CI data read in on "sam_addingintissuesubsample.EXR" script 
 
 library("tidyverse")
-library("gsheet")
 
 ci2<-read.csv("wdata/ci.final.data_29_July_2023.csv")
 HM<-read.csv("odata/sam_HM1_26_July_2023.csv")
@@ -80,12 +80,19 @@ oc1.site.h<-lm(oc1~site,data=ci.hm%>%
 oc1.site.l<-lm(oc1~site,data=ci.hm%>%
                  mutate(site=relevel(site,ref="L")))
 
+oc1.site.b<-lm(oc1~site,data=ci.hm%>%
+                 mutate(site=relevel(site,ref="b")))
+
 
 oc1.temp<-lm(oc1~temp,data=ci.hm)
 plot(oc1.site)
 summary(oc1.site)
+#h and s signficant 
+plot(oc1.site.h)
 summary(oc1.site.h)
+#h significant with all sites
 summary(oc1.site.l)
+summary(oc1.site.b)
 summary(oc1.site.aov)
 TukeyHSD(oc1.site.aov)
 
@@ -128,6 +135,7 @@ TukeyHSD(oc2.site.aov)
 #oyster condition 1
 ggplot()+
   geom_point(data=ci.hm,aes(x=totalHM,y=oc1,color=site))
+#no pattern 
 
 ggplot()+
   geom_point(data=ci.hm.1,aes(x=totalHM.mean,y=oc1.mean,color=site))
@@ -145,9 +153,12 @@ ggplot()+
 ggplot()+
   geom_boxplot(data=ci.hm,aes(y=oc2,x=totalHM,fill=site))
 
-#all sites except bayou shows as heavy metal increases, condition index decreases
+#trying mixed effects model and interactive effects
+
 library(lmerTest)
+#mixed effects model 
 hm.ci1<-lmer(oc1~totalHM+(1|site),data=ci.hm)
+#interactive effects model 
 hm.ci1.int<-lm(oc1~totalHM*site,data=ci.hm)
 
 plot(hm.ci1)
@@ -157,10 +168,12 @@ plot(hm.ci1.int)
 anova(hm.ci1.int)
 summary(hm.ci1.int)
 
+
+
 hm.ci2<-lm(oc2~totalHM,data=ci.hm)
 plot(hm.ci2)
 summary(hm.ci2)
-#neither significant but does not show normality 
+
 
 #vanadium 
 #oc1
@@ -194,6 +207,14 @@ par(mfrow=c(2,2))
 plot(V.ci2)
 summary(V.ci2)
 #not significant between V and OC2
+
+ci1.v<-lmer(oc1~V+(1|site),data=ci.hm)
+ci1.v.int<-lm(oc1~V*site,data=ci.hm)
+plot(ci1.v)
+summary(ci1.v)
+plot(ci1.v.int)
+anova(ci1.v.int)
+summary(ci1.v.int)
 
 
 #Chromium 
@@ -230,6 +251,14 @@ plot(Cr.ci2)
 summary(Cr.ci2)
 #not significant between Cr and OC2
 
+ci1.cr<-lmer(oc1~Cr+(1|site),data=ci.hm)
+ci1.cr.int<-lm(oc1~Cr*site,data=ci.hm)
+plot(ci1.cr)
+summary(ci1.cr)
+plot(ci1.cr.int)
+anova(ci1.cr.int)
+summary(ci1.cr.int)
+
 
 #Fe 
 #oc1
@@ -265,6 +294,14 @@ plot(Fe.ci2)
 summary(Fe.ci2)
 #not significant between Fe and OC2
 
+ci1.fe<-lmer(oc1~Fe+(1|site),data=ci.hm)
+ci1.fe.int<-lm(oc1~Fe*site,data=ci.hm)
+plot(ci1.fe)
+summary(ci1.fe)
+plot(ci1.fe.int)
+anova(ci1.fe.int)
+summary(ci1.fe.int)
+
 #As
 #oc1
 ggplot()+
@@ -298,6 +335,16 @@ par(mfrow=c(2,2))
 plot(As.ci2)
 summary(As.ci2)
 #not significant between As and OC2
+
+
+
+ci1.as<-lmer(oc1~As+(1|site),data=ci.hm)
+ci1.as.int<-lm(oc1~As*site,data=ci.hm)
+plot(ci1.as)
+summary(ci1.as)
+plot(ci1.as.int)
+anova(ci1.as.int)
+summary(ci1.as.int)
 
 #Ba
 #oc1
@@ -333,6 +380,14 @@ plot(Ba.ci2)
 summary(Ba.ci2)
 #not significant between Ba and OC2
 
+ci1.ba<-lmer(oc1~Ba+(1|site),data=ci.hm)
+ci1.ba.int<-lm(oc1~Ba*site,data=ci.hm)
+plot(ci1.ba)
+summary(ci1.ba)
+plot(ci1.ba.int)
+anova(ci1.ba.int)
+summary(ci1.ba.int)
+
 #Pb
 #oc1
 ggplot()+
@@ -367,6 +422,13 @@ plot(Pb.ci2)
 summary(Pb.ci2)
 #not significant between Pb and OC2
 
+ci1.pb<-lmer(oc1~Pb+(1|site),data=ci.hm)
+ci1.pb.int<-lm(oc1~Pb*site,data=ci.hm)
+plot(ci1.pb)
+summary(ci1.pb)
+plot(ci1.pb.int)
+anova(ci1.pb.int)
+summary(ci1.pb.int)
 
 #Cu
 #oc1
@@ -402,6 +464,14 @@ par(mfrow=c(2,2))
 plot(Cu.ci2)
 summary(Cu.ci2)
 #not significant between Cu and OC2
+
+ci1.cu<-lmer(oc1~Cu+(1|site),data=ci.hm)
+ci1.cu.int<-lm(oc1~Cu*site,data=ci.hm)
+plot(ci1.cu)
+summary(ci1.cu)
+plot(ci1.cu.int)
+anova(ci1.cu.int)
+summary(ci1.cu.int)
 
 
 #Zn
@@ -439,7 +509,13 @@ plot(Zn.ci2)
 summary(Zn.ci2)
 #not significant between Zn and OC2
 
-
+ci1.zn<-lmer(oc1~Zn+(1|site),data=ci.hm)
+ci1.zn.int<-lm(oc1~Zn*site,data=ci.hm)
+plot(ci1.zn)
+summary(ci1.zn)
+plot(ci1.zn.int)
+anova(ci1.zn.int)
+summary(ci1.zn.int)
 
 
 

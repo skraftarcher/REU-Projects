@@ -1,5 +1,6 @@
 #Samantha Schlegel 7-26-23
 #HM data analysis 
+#HM data read in on "schlegel_data_REU2023.EX.R. script" 
 
 library("tidyverse")
 
@@ -212,11 +213,17 @@ ggplot(data=HM)+geom_point(aes(x=pH,y=do))
 HM$site<-factor(HM$site,levels = c("s","h","L","b"))
 ggplot()+
   geom_point(data=HM,aes(x=site,y=totalHM,color=site))
-sam4<-lm(totalHM~site,data=HM)
+sam4.log.lm<-lm(log(totalHM)~site,data=HM)
+plot(sam4.log.lm)
+summary(sam4.log.lm)
+#sister lake and bayou significant from each other for total HM and site
 
+sam4<-lm(totalHM~site,data=HM)
 par(mfrow=c(2,2))
 plot(sam4)#investigate residuals 
 summary(sam4)
+(sam.totalhm.kw<-kruskal.test(totalHM~site,data=HM))
+#normal and not significant 
 
 ggplot()+
   geom_point(data=HM,aes(x=site,y=V,color=site))
@@ -226,57 +233,70 @@ plot(sam5)#investigate residuals # structure to untransformed
 summary(sam5)
 # trying kruskal wallace to make sure
 (sam.v.kw<-kruskal.test(V~site,data=HM))
+#kruskal wallace test is a nonparametric test; double parentheses shows output 
+#log and kruskal not signicant for vanadium vs. site 
+
 
 ggplot()+
   geom_point(data=HM,aes(x=site,y=Cr,color=site))
 sam6<-lm(log(Cr+.001)~site,data=HM)# added .001 because log of 0 is undefined
 plot(sam6)#investigate residuals # structure to residuals tried log transforming
 summary(sam6)
+(sam.Cr.kw<-kruskal.test(Cr~site,data=HM))
+#log and kruskal not significant for cr vs. site 
+
 
 ggplot()+
   geom_point(data=HM,aes(x=site,y=Fe,color=site))
-sam7<-lm(Fe~site,data=HM)
+sam7<-lm(log(Fe)~site,data=HM)
 par(mfrow=c(2,2))
 plot(sam7)#investigate residuals 
 summary(sam7)
+(sam.Fe.kw<-kruskal.test(Fe~site,data=HM))
+#log and kruskal not significant for Fe vs. site 
 
 ggplot()+
   geom_point(data=HM,aes(x=site,y=As,color=site))
-sam8<-lm(As~site+temp,data=HM)
+sam8<-lm(log(As)~site,data=HM)
 par(mfrow=c(2,2))
 plot(sam8)#investigate residuals 
 summary(sam8)
+(sam.As.kw<-kruskal.test(As~site,data=HM))
+#log and kruskal not significant for Fe vs. site 
+
 
 ggplot()+
   geom_point(data=HM,aes(x=site,y=Ba,color=site))
-sam9<-lm(Ba~site+temp,data=HM)
-
+sam9<-lm(log(Ba)~site+temp,data=HM)
 plot(sam9)#investigate residuals 
 summary(sam9)
+(sam.Ba.kw<-kruskal.test(Ba~site,data=HM))
+#log and kruskal not significant for Ba vs. site
 
 ggplot()+
   geom_point(data=HM,aes(x=site,y=Pb,color=site))
-sam10<-lm(Pb~site,data=HM)
-
+sam10<-lm(log(Pb)~site,data=HM)
 plot(sam10)#investigate residuals 
 summary(sam10)
-#bayou has outlier - looks like a small pattern, but it is not signficant 
+#bayou and sister lake significant 
+#think this is normal but would like to be double checked 
+(sam.Pb.kw<-kruskal.test(Pb~site,data=HM))
 
 ggplot()+
   geom_point(data=HM,aes(x=site,y=Cu,color=site))
-sam11<-lm(Cu~site,data=HM)
-
+sam11<-lm(log(Cu)~site,data=HM)
 plot(sam11)#investigate residuals 
 summary(sam11)
+(sam.Cu.kw<-kruskal.test(Cu~site,data=HM))
+#log and kruskal not significant for Cu vs. site
 
 ggplot()+
   geom_point(data=HM,aes(x=site,y=Zn,color=site))
-sam12<-lm(Zn~site,data=HM)
-
+sam12<-lm(log(Zn)~site,data=HM)
 plot(sam12)#investigate residuals 
 summary(sam12)
-
-
+(sam.Zn.kw<-kruskal.test(Zn~site,data=HM))
+#log and kruskal not significant for Zn vs. site
 
 ##looking at totalHM vs. human categories
 #debris
@@ -289,29 +309,36 @@ ggplot()+
   geom_boxplot(data=HM,aes(y=totalHM,fill=debris,x=site))
 
 #no clear pattern between totalHM and debris between sites - not significant 
-sam1<-lm(totalHM~debris+temp+do+pH,data=HM)
+sam1<-lm(totalHM~debris,data=HM)
+sam.totalhm.log<-lm(log(totalHM)~debris,data=HM)
+plot(sam.totalhm.log)
+summary(sam.totalhm.log)
+(sam.totalHMdebris.kw<-kruskal.test(totalHM~site,data=HM))
+
 par(mfrow=c(2,2))
 plot(sam1)#investigate residuals 
 summary(sam1)
 
+##log and kruskal not significant for totalHM vs. debris
 
-#?review residualas vs. fitted - supposed to look nonuniform and randomly distributed? and 
-#what the coefficients table shows
-
-sam1a<-lm(totalHM~debris+temp,data=HM)
+sam1a<-lm(log(totalHM)~temp,data=HM)
 par(mfrow=c(2,2))
 plot(sam1a)#investigate residuals 
 summary(sam1a)
+(sam.totalHMtemp.kw<-kruskal.test(totalHM~temp,data=HM))
 
-sam1c<-lm(totalHM~do,data=HM)
+
+sam1c<-lm(log(totalHM)~do,data=HM)
 par(mfrow=c(2,2))
 plot(sam1c)#investigate residuals 
 summary(sam1c)
+(sam.totalHMdo.kw<-kruskal.test(totalHM~do,data=HM))
 
-sam1d<-lm(totalHM~pH,data=HM)
+sam1d<-lm(log(totalHM)~pH,data=HM)
 par(mfrow=c(2,2))
 plot(sam1d)#investigate residuals 
 summary(sam1d)
+(sam.totalHpH.kw<-kruskal.test(totalHM~pH,data=HM))
 
 
 
@@ -338,10 +365,11 @@ ggplot()+
 #is not as busy as the other channels; sister lake is not exactly in a major shipping channel 
 summary(HM.av)
 
-sam2<-lm(totalHM~shipping+temp,data=HM)
+sam2<-lm(log(totalHM)~shipping,data=HM)
 par(mfrow=c(2,2))
 plot(sam2)#investigate residuals 
 summary(sam2)
+#log transformation and it's signficant - totalHM vs shipping
 
 
 #oilgas
@@ -353,10 +381,11 @@ ggplot()+
 ggplot()+
   geom_boxplot(data=HM,aes(y=totalHM,fill=oilgas,x=site))
 
-sam3<-lm(totalHM~oilgas+temp,data=HM)
+sam3<-lm(log(totalHM)~oilgas,data=HM)
 par(mfrow=c(2,2))
 plot(sam3)#investigate residuals 
 summary(sam3)
+(sam.totalHMoilgas.kw<-kruskal.test(totalHM~oilgas,data=HM))
 #not signficant - total HM and oilgas
 
 
@@ -384,12 +413,13 @@ ggplot()+
   geom_point(data=HM.av,aes(x=debris1,y=V.mean,color=site))
 ggplot()+
   geom_boxplot(data=HM,aes(y=V,fill=debris,x=site))
-#small relationship - sites with more debris had slightly higher levels of V - a lot of outliers
-samV<-lm(V~debris+temp,data=HM)
+
+
+samV<-lm(log(V)~debris,data=HM)
 par(mfrow=c(2,2))
 plot(samV)#investigate residuals 
 summary(samV)
-#no significant relationship between V and debris 
+#significant relationship between V and debris with log 
 
 #shipping
 ggplot()+
@@ -402,11 +432,12 @@ ggplot()+
   geom_boxplot(data=HM,aes(y=V,fill=shipping,x=site))
 #no clear pattern between V and shipping between sites
 
-samVs<-lm(V~shipping+temp,data=HM)#Vs= vanadium and shipping
+samVs<-lm(log(V)~shipping,data=HM)#Vs= vanadium and shipping
 par(mfrow=c(2,2))
 plot(samVs)#investigate residuals 
 summary(samVs)
-#no significance between V and shipping between sites
+(sam.v.ship.kw<-kruskal.test(V~shipping,data=HM))
+#no significance between V and shipping 
 
 #oilgas
 ggplot()+
@@ -418,9 +449,9 @@ ggplot()+
 #LUMCON has the highest oil/gas and the highest V median - makes sense as oilgas is a source of V
 
 samVo<-lm(log(V)~oilgas,data=HM)#samVo = vanadiuma and oilgas
-
 plot(samVo)#investigate residuals 
 summary(samVo)
+(sam.Voil.kw<-kruskal.test(V~oilgas,data=HM))
 #not significant - V vs oilgas between sites
 
 #Cr
@@ -433,8 +464,7 @@ ggplot()+
   geom_boxplot(data=HM,aes(y=Cr,fill=debris,x=site))
 #no relationship between debris and Cr between sites
 
-samCr.d<-lm(Cr~debris+temp,data=HM)#samCr.d= chromium vs debris
-par(mfrow=c(2,2))
+samCr.d<-lm(log(Cr+0.001)~debris,data=HM)
 plot(samCr.d)#investigate residuals 
 summary(samCr.d)
 #no significant relationship between Cr and debris 
@@ -450,10 +480,10 @@ ggplot()+
   geom_boxplot(data=HM,aes(y=Cr,fill=shipping,x=site))
 #no clear pattern between V and shipping between sites
 
-samCr.s<-lm(Cr~shipping+temp,data=HM)
-par(mfrow=c(2,2))
+samCr.s<-lm(log(Cr+0.001)~shipping,data=HM)
 plot(samCr.s)#investigate residuals 
 summary(samCr.s)
+(sam.cr.shipp.kw<-kruskal.test(Cr~shipping,data=HM))
 #no significance between Cr and shipping between sites
 
 #oilgas
@@ -465,8 +495,7 @@ ggplot()+
   geom_boxplot(data=HM,aes(y=Cr,fill=oilgas,x=site))
 
 
-samCr.o<-lm(Cr~oilgas+temp,data=HM)#samVo = vanadiuma and oilgas
-par(mfrow=c(2,2))
+samCr.o<-lm(log(Cr+0.001)~oilgas,data=HM)
 plot(samCr.o)#investigate residuals 
 summary(samCr.o)
 #not significant - Cr vs oilgas between sites
@@ -481,10 +510,10 @@ ggplot()+
   geom_boxplot(data=HM,aes(y=Fe,fill=debris,x=site))
 #no relationship 
 
-samFe.d<-lm(Fe~debris+temp,data=HM)
-par(mfrow=c(2,2))
+samFe.d<-lm(log(Fe)~debris,data=HM)
 plot(samFe.d)#investigate residuals 
 summary(samFe.d)
+(sam.Fe.debris.kw<-kruskal.test(Fe~debris,data=HM))
 #no significant relationship between Fe and debris 
 
 #shipping
@@ -498,10 +527,10 @@ ggplot()+
   geom_boxplot(data=HM,aes(y=Fe,fill=shipping,x=site))
 #no clear pattern between Fe and shipping between sites
 
-samFe.s<-lm(Fe~shipping+temp,data=HM)
-par(mfrow=c(2,2))
+samFe.s<-lm(log(Fe)~shipping,data=HM)
 plot(samFe.s)#investigate residuals 
 summary(samFe.s)
+(sam.Feship.kw<-kruskal.test(Fe~shipping,data=HM))
 #no significance between Fe and shipping between sites
 
 #oilgas
@@ -513,10 +542,10 @@ ggplot()+
   geom_boxplot(data=HM,aes(y=Fe,fill=oilgas,x=site))
 
 
-samFe.o<-lm(Fe~oilgas+temp,data=HM)
-par(mfrow=c(2,2))
+samFe.o<-lm(log(Fe)~oilgas,data=HM)
 plot(samFe.o)#investigate residuals 
 summary(samFe.o)
+(sam.Feoil.kw<-kruskal.test(Fe~oilgas,data=HM))
 #not significant - Fe vs oilgas between sites
 
 
@@ -530,10 +559,10 @@ ggplot()+
   geom_boxplot(data=HM,aes(y=As,fill=debris,x=site))
 #no relationship 
 
-samAs.d<-lm(As~debris+temp,data=HM)
-par(mfrow=c(2,2))
+samAs.d<-lm(log(As)~debris,data=HM)
 plot(samAs.d)#investigate residuals 
 summary(samAs.d)
+(sam.Asdebris.kw<-kruskal.test(As~debris,data=HM))
 #no significant relationship between As and debris 
 
 #shipping
@@ -547,10 +576,11 @@ ggplot()+
   geom_boxplot(data=HM,aes(y=As,fill=shipping,x=site))
 #no clear pattern between As and shipping between sites
 
-samAs.s<-lm(As~shipping+temp,data=HM)
+samAs.s<-lm(log(As)~shipping,data=HM)
 par(mfrow=c(2,2))
 plot(samAs.s)#investigate residuals 
 summary(samAs.s)
+(sam.As.ship.kw<-kruskal.test(As~shipping,data=HM))
 #no significance between As and shipping between sites
 
 #oilgas
@@ -562,10 +592,11 @@ ggplot()+
   geom_boxplot(data=HM,aes(y=As,fill=oilgas,x=site))
 #no relationship
 
-samAs.o<-lm(As~oilgas+temp,data=HM)
+samAs.o<-lm(log(As)~oilgas,data=HM)
 par(mfrow=c(2,2))
 plot(samAs.o)#investigate residuals 
 summary(samAs.o)
+(sam.Asoil.kw<-kruskal.test(As~oilgas,data=HM))
 #not significant - As vs oilgas between sites
 
 #Ba
@@ -579,10 +610,10 @@ ggplot()+
 #sites with more debris have slightly more ba
 
 samBa.d<-lm(log(Ba)~debris,data=HM)
-
 plot(samBa.d)#investigate residuals 
 summary(samBa.d)
-#no significant relationship between Ba and debris 
+#significant relationship between Ba and debris for log 
+(sam.Badebris.kw<-kruskal.test(Ba~debris,data=HM))
 
 #shipping
 ggplot()+
@@ -595,10 +626,10 @@ ggplot()+
   geom_boxplot(data=HM,aes(y=Ba,fill=shipping,x=site))
 #no clear pattern between Ba and shipping between sites
 
-samBa.s<-lm(Ba~shipping+temp,data=HM)
-par(mfrow=c(2,2))
+samBa.s<-lm(log(Ba)~shipping+temp,data=HM)
 plot(samBa.s)#investigate residuals 
 summary(samBa.s)
+(sam.Ba.ship.kw<-kruskal.test(Ba~shipping,data=HM))
 #no significance between Ba and shipping 
 
 #oilgas
@@ -611,10 +642,11 @@ ggplot()+
 #small relationship between more oilgas and more Ba
 
 samBa.o<-lm(log(Ba)~oilgas,data=HM)
-
 plot(samBa.o)#investigate residuals 
 summary(samBa.o)
 #not significant - Ba vs oilgas 
+(sam.Baoilgas.kw<-kruskal.test(Ba~oilgas,data=HM))
+
 
 #Pb
 #debris
@@ -629,8 +661,8 @@ ggplot()+
 samPb.d<-lm(log(Pb)~debris,data=HM)
 plot(samPb.d)#investigate residuals 
 summary(samPb.d)
-#?significant relationship between Pb and debris but residuals vs. fitted does not look
-#like it fits the assumption of normality 
+#significant relationship between Pb and debris log
+#check normality
 
 #shipping
 ggplot()+
@@ -643,10 +675,10 @@ ggplot()+
   geom_boxplot(data=HM,aes(y=Pb,fill=shipping,x=site))
 #no clear pattern between Pb and shipping between sites
 
-samPb.s<-lm(Pb~shipping+temp,data=HM)
-par(mfrow=c(2,2))
+samPb.s<-lm(log(Pb)~shipping,data=HM)
 plot(samPb.s)#investigate residuals 
 summary(samPb.s)
+(sam.Pb.ship.kw<-kruskal.test(Pb~shipping,data=HM))
 #no significance between Pb and shipping 
 
 #oilgas
@@ -661,10 +693,9 @@ ggplot()+
 samPb.o<-lm(log(Pb)~oilgas,data=HM)
 plot(samPb.o)#investigate residuals 
 summary(samPb.o)
-#?significant Pb and oilgas but not sure if residuals are normal
+(sam.Pboilgas.kw<-kruskal.test(Pb~oilgas,data=HM))
 
-#?is there a way to look at significance between site,heavy metal, and human activity? so far 
-#i have only tried site vs. HM and human acitvity vs. HM 
+
 
 #Cu
 #debris
@@ -676,10 +707,10 @@ ggplot()+
   geom_boxplot(data=HM,aes(y=Cu,fill=debris,x=site))
 #no relationship with Cu and debris 
 
-samCu.d<-lm(Cu~debris+temp,data=HM)
-par(mfrow=c(2,2))
+samCu.d<-lm(log(Cu)~debris,data=HM)
 plot(samCu.d)#investigate residuals 
 summary(samCu.d)
+(sam.Cudebris.kw<-kruskal.test(Cu~debris,data=HM))
 #no significance between Cu and debris
 
 #shipping
@@ -693,10 +724,10 @@ ggplot()+
   geom_boxplot(data=HM,aes(y=Cu,fill=shipping,x=site))
 #slight pattern between Cu and shipping between sites
 
-samCu.s<-lm(Cu~shipping+temp,data=HM)
-par(mfrow=c(2,2))
+samCu.s<-lm(log(Cu)~shipping,data=HM)
 plot(samCu.s)#investigate residuals 
 summary(samCu.s)
+(sam.Cuship.kw<-kruskal.test(Ba~shipping,data=HM))
 #no significance between Cu and shipping 
 
 #oilgas
@@ -708,10 +739,10 @@ ggplot()+
   geom_boxplot(data=HM,aes(y=Cu,fill=oilgas,x=site))
 #no relationship between Cu and oilgas 
 
-samCu.o<-lm(Cu~oilgas+temp,data=HM)
-par(mfrow=c(2,2))
+samCu.o<-lm(log(Cu)~oilgas,data=HM)
 plot(samCu.o)#investigate residuals 
 summary(samCu.o)
+(sam.Cuoilgas.kw<-kruskal.test(Cu~oilgas,data=HM))
 #no signficance - Cu and oilgas
 
 #Zn
@@ -724,8 +755,7 @@ ggplot()+
   geom_boxplot(data=HM,aes(y=Zn,fill=debris,x=site))
 #no relationship with Zn and debris 
 
-samZn.d<-lm(Zn~debris+temp,data=HM)
-par(mfrow=c(2,2))
+samZn.d<-lm(log(Zn)~debris,data=HM)
 plot(samZn.d)#investigate residuals 
 summary(samZn.d)
 #no significance between Zn and debris
@@ -741,11 +771,11 @@ ggplot()+
   geom_boxplot(data=HM,aes(y=Zn,fill=shipping,x=site))
 #less shipping, less Zn 
 
-samZn.s<-lm(Zn~shipping+temp,data=HM)
+samZn.s<-lm(log(Zn)~shipping,data=HM)
 par(mfrow=c(2,2))
 plot(samZn.s)#investigate residuals 
 summary(samZn.s)
-#no significance between Zn and shipping 
+#significance between Zn and shipping 
 
 #oilgas
 ggplot()+
@@ -756,10 +786,10 @@ ggplot()+
   geom_boxplot(data=HM,aes(y=Zn,fill=oilgas,x=site))
 #no relationship between Zn and oilgas 
 
-samZn.o<-lm(Zn~oilgas+temp,data=HM)
-par(mfrow=c(2,2))
+samZn.o<-lm(log(Zn)~oilgas,data=HM)
 plot(samZn.o)#investigate residuals 
 summary(samZn.o)
+(sam.Znoilgas.kw<-kruskal.test(Zn~oilgas,data=HM))
 #no signficance - Zn and oilgas
 
 
